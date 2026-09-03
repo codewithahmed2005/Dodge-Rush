@@ -1,0 +1,560 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#app {
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(45deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#game-status {
+  font-size: 0.9rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  transition: all 0.3s ease;
+}
+
+main {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  max-height: 600px;
+}
+
+#gameCanvas {
+  width: 100%;
+  height: 100%;
+  background: #0a0a1a;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: block;
+  touch-action: none;
+}
+
+#ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#score-display {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* Add these styles */
+
+#game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 40px 50px;
+  border-radius: 16px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 0, 0, 0.4);
+  pointer-events: auto;
+  min-width: 320px;
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(255, 0, 0, 0.4); }
+  50% { border-color: rgba(255, 0, 0, 0.9); }
+}
+
+#game-over h2 {
+  font-size: 2.5rem;
+  color: #ff4444;
+  margin-bottom: 16px;
+  text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+.game-over-stats {
+  margin: 16px 0;
+}
+
+.game-over-stats p {
+  font-size: 1.1rem;
+  color: #cccccc;
+  margin: 6px 0;
+}
+
+.game-over-stats span {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.game-over-buttons {
+  margin: 20px 0 12px 0;
+}
+
+#restart-btn {
+  padding: 14px 50px;
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #4ade80, #22d3ee);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+  pointer-events: auto;
+}
+
+#restart-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 30px rgba(74, 222, 128, 0.4);
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: #666666;
+  margin-top: 8px;
+}
+
+#stats-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+#streak-display { color: #ffd700; }
+#deaths-display { color: #ff4444; }
+#best-display { color: #888888; }
+
+footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#controls {
+  display: none;
+  gap: 20px;
+  width: 100%;
+  max-width: 300px;
+  padding: 0 20px;
+}
+
+.mobile-btn {
+  flex: 1;
+  padding: 16px;
+  font-size: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.mobile-btn:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  #app {
+    padding: 8px;
+  }
+  
+  h1 {
+    font-size: 1.3rem;
+  }
+  
+  #game-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+  
+  #controls {
+    display: flex;
+  }
+  
+  #score-display {
+    font-size: 1rem;
+    top: 12px;
+    right: 12px;
+    padding: 2px 12px;
+  }
+  
+  #game-over {
+    padding: 24px 20px;
+    min-width: 200px;
+  }
+  
+  #game-over h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Touch device adjustments */
+@media (pointer: coarse) {
+  #controls {
+    display: flex;
+  }
+}
+
+/* Add this to your existing CSS */
+
+#stats-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+#streak-display {
+  color: #ffd700;
+}
+
+#deaths-display {
+  color: #ff4444;
+}
+
+#best-display {
+  color: #888888;
+}
+
+/* Add these styles */
+
+/* ==================== PAUSE BUTTON ==================== */
+
+#pause-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#pause-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+#pause-btn:active {
+  transform: scale(0.9);
+}
+
+/* ==================== PAUSE OVERLAY ==================== */
+
+#pause-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  pointer-events: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pause-content {
+  text-align: center;
+  pointer-events: auto;
+}
+
+.pause-content h2 {
+  font-size: 3rem;
+  color: #ffd700;
+  margin-bottom: 12px;
+  text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+}
+
+.pause-content p {
+  font-size: 1.1rem;
+  color: #aaaaaa;
+  margin-bottom: 20px;
+}
+
+.pause-content kbd {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: monospace;
+  color: #ffffff;
+}
+
+#resume-btn {
+  padding: 12px 40px;
+  font-size: 1.1rem;
+  background: linear-gradient(45deg, #ffd700, #f7971e);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+  pointer-events: auto;
+}
+
+#resume-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 30px rgba(255, 215, 0, 0.4);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  #pause-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    top: 12px;
+    right: 12px;
+  }
+  
+  .pause-content h2 {
+    font-size: 2rem;
+  }
+  
+  .pause-content p {
+    font-size: 0.9rem;
+  }
+  
+  #resume-btn {
+    padding: 10px 30px;
+    font-size: 1rem;
+  }
+}
+
+/* Add these styles */
+
+#sound-toggle {
+  position: absolute;
+  top: 70px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sound-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+#sound-toggle.muted {
+  opacity: 0.4;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  #sound-toggle {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+    top: 60px;
+    right: 12px;
+  }
+}
+
+/* Auth Modal */
+#auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.auth-container {
+    background: #1a1a2e;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 400px;
+    width: 90%;
+}
+
+.auth-container h2 {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.auth-container input:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+#auth-submit {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #ffd700, #f7971e);
+    border: none;
+    border-radius: 8px;
+    color: #1a1a2e;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+#auth-submit:hover {
+    transform: scale(1.02);
+}
+
+#auth-switch {
+    text-align: center;
+    margin-top: 16px;
+    color: #888888;
+}
+
+#auth-switch a {
+    color: #ffd700;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* User Info */
+#user-info {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+#username-display {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+#logout-btn {
+    padding: 4px 16px;
+    background: rgba(255, 68, 68, 0.2);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    border-radius: 20px;
+    color: #ff4444;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#logout-btn:hover {
+    background: rgba(255, 68, 68, 0.3);
+}
